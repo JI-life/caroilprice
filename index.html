@@ -60,6 +60,110 @@
       opacity: 0.9;
     }
 
+    /* 全国平均価格セクション */
+    .avg-section {
+      background: white;
+      border-bottom: 1px solid #eee;
+      padding: 14px 16px;
+    }
+
+    .avg-inner {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .avg-heading {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .avg-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #555;
+      flex: 1;
+    }
+
+    .avg-updated {
+      font-size: 0.72rem;
+      color: #aaa;
+    }
+
+    .avg-prices {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .avg-item {
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .avg-fuel-name {
+      display: block;
+      font-size: 0.72rem;
+      color: #888;
+      margin-bottom: 2px;
+    }
+
+    .avg-fuel-price {
+      display: block;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #e65c00;
+      line-height: 1.2;
+    }
+
+    .avg-fuel-unit {
+      display: block;
+      font-size: 0.68rem;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    .avg-use-btn {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #fff3e8;
+      border: 1px solid #e65c00;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      color: #e65c00;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .avg-use-btn:hover {
+      background: #ffe0c2;
+    }
+
+    .avg-source {
+      margin-top: 8px;
+      font-size: 0.68rem;
+      color: #bbb;
+      text-align: right;
+    }
+
+    .avg-source a {
+      color: #bbb;
+      text-decoration: underline;
+    }
+
+    .avg-error {
+      font-size: 0.75rem;
+      color: #bbb;
+      text-align: center;
+      padding: 8px 0 2px;
+    }
+
+    /* メインコンテンツ */
     main {
       max-width: 480px;
       margin: 24px auto;
@@ -97,7 +201,7 @@
       padding: 12px 16px;
       border: 2px solid #e8e8e8;
       border-radius: 10px;
-      font-size: 16px; /* iOS自動ズーム防止 */
+      font-size: 16px;
       outline: none;
       transition: border-color 0.2s;
       background: #fafafa;
@@ -149,6 +253,29 @@
       min-height: 18px;
     }
 
+    /* タンク容量手入力 */
+    .tank-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tank-row input {
+      flex: 1;
+    }
+
+    .tank-row .unit {
+      font-size: 0.9rem;
+      color: #888;
+      white-space: nowrap;
+    }
+
+    .tank-manual-note {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: #aaa;
+    }
+
     .fuel-group {
       display: flex;
       gap: 8px;
@@ -165,7 +292,7 @@
       transition: all 0.15s;
       color: #555;
       font-weight: 500;
-      min-height: 44px; /* タッチターゲット確保 */
+      min-height: 44px;
     }
 
     .fuel-btn.selected {
@@ -192,7 +319,7 @@
       color: #555;
       font-weight: 500;
       text-align: center;
-      min-height: 44px; /* タッチターゲット確保 */
+      min-height: 44px;
     }
 
     .level-btn.selected {
@@ -241,6 +368,7 @@
       transform: scale(0.98);
     }
 
+    /* 結果カード */
     .result-card {
       background: linear-gradient(135deg, #e65c00, #f9a825);
       border-radius: 16px;
@@ -273,7 +401,16 @@
       font-size: 0.82rem;
       opacity: 0.85;
       margin-top: 10px;
-      line-height: 1.7;
+      line-height: 1.8;
+    }
+
+    .result-per1000 {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.35);
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0.95;
     }
 
     .error-msg {
@@ -309,6 +446,40 @@
   <p>車種と単価を入れるだけで、給油費用がわかります</p>
 </header>
 
+<!-- 全国平均ガソリン価格 -->
+<div class="avg-section">
+  <div class="avg-inner">
+    <div class="avg-heading">
+      <span>📊</span>
+      <span class="avg-title">全国平均ガソリン価格</span>
+      <span class="avg-updated" id="avgUpdated"></span>
+    </div>
+    <div class="avg-prices" id="avgPricesArea">
+      <div class="avg-item">
+        <span class="avg-fuel-name">レギュラー</span>
+        <span class="avg-fuel-price" id="avgRegular">-</span>
+        <span class="avg-fuel-unit">円/L</span>
+        <button class="avg-use-btn" data-fuel="regular" data-price="">使う</button>
+      </div>
+      <div class="avg-item">
+        <span class="avg-fuel-name">ハイオク</span>
+        <span class="avg-fuel-price" id="avgPremium">-</span>
+        <span class="avg-fuel-unit">円/L</span>
+        <button class="avg-use-btn" data-fuel="premium" data-price="">使う</button>
+      </div>
+      <div class="avg-item">
+        <span class="avg-fuel-name">軽油</span>
+        <span class="avg-fuel-price" id="avgDiesel">-</span>
+        <span class="avg-fuel-unit">円/L</span>
+        <button class="avg-use-btn" data-fuel="diesel" data-price="">使う</button>
+      </div>
+    </div>
+    <div class="avg-source">
+      出典：<a href="https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl007/" target="_blank" rel="noopener">資源エネルギー庁 石油製品価格調査</a>
+    </div>
+  </div>
+</div>
+
 <main>
   <div class="card">
 
@@ -316,10 +487,20 @@
     <div class="field">
       <label>車種</label>
       <div class="search-wrap">
-        <input type="text" id="carInput" placeholder="例：プリウス" autocomplete="off">
+        <input type="text" id="carInput" placeholder="例：プリウス（空欄でタンク直接入力も可）" autocomplete="off">
         <ul class="suggestions" id="suggestions" style="display:none;"></ul>
       </div>
       <div class="tank-hint" id="tankHint"></div>
+    </div>
+
+    <!-- タンク容量（手動入力） -->
+    <div class="field">
+      <label>タンク容量</label>
+      <div class="tank-row">
+        <input type="number" id="tankInput" placeholder="例：40" min="1" max="200">
+        <span class="unit">L</span>
+      </div>
+      <div class="tank-manual-note">車種を選ぶと自動入力。バイク・リスト外の車は直接入力してください。</div>
     </div>
 
     <!-- 燃料種別 -->
@@ -361,6 +542,7 @@
     <div class="result-label">合計金額（目安）</div>
     <div class="result-amount" id="resultAmount"></div>
     <div class="result-detail" id="resultDetail"></div>
+    <div class="result-per1000" id="resultPer1000"></div>
   </div>
 
   <div class="ad-area">
@@ -444,20 +626,105 @@
     { name: "クロストレック",     maker: "スバル",  tank: 48, fuel: ["regular"] },
   ];
 
-  const FUEL_LABELS = {
-    regular: "レギュラー",
-    premium: "ハイオク",
-    diesel: "軽油"
+  const FUEL_LABELS = { regular: "レギュラー", premium: "ハイオク", diesel: "軽油" };
+  const LS = {
+    car:   "caroilprice_car",
+    fuel:  "caroilprice_fuel",
+    price: "caroilprice_price",
+    tank:  "caroilprice_tank",
+    level: "caroilprice_level",
   };
 
   let selectedCar = null;
   let selectedFuel = "regular";
   let selectedLevel = 0;
+  let avgPrices = {};
+
+  // --- 全国平均価格を取得 ---
+  async function loadAvgPrices() {
+    try {
+      const res = await fetch('./prices.json');
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      avgPrices = data;
+
+      document.getElementById("avgRegular").textContent = data.regular;
+      document.getElementById("avgPremium").textContent = data.premium;
+      document.getElementById("avgDiesel").textContent  = data.diesel;
+      document.getElementById("avgUpdated").textContent = "更新: " + data.updated;
+
+      const priceMap = { regular: data.regular, premium: data.premium, diesel: data.diesel };
+      document.querySelectorAll(".avg-use-btn").forEach(btn => {
+        const fuel = btn.dataset.fuel;
+        btn.dataset.price = priceMap[fuel];
+      });
+    } catch {
+      document.getElementById("avgUpdated").textContent = "取得失敗";
+    }
+  }
+
+  // 「使う」ボタン
+  document.querySelectorAll(".avg-use-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const fuel  = btn.dataset.fuel;
+      const price = btn.dataset.price;
+      if (!price) return;
+      setFuel(fuel);
+      document.getElementById("priceInput").value = price;
+      saveToStorage();
+    });
+  });
+
+  // --- localStorage 読み込み ---
+  function loadFromStorage() {
+    try {
+      const carName = localStorage.getItem(LS.car);
+      if (carName) {
+        const car = CARS.find(c => c.name === carName);
+        if (car) {
+          selectedCar = car;
+          document.getElementById("carInput").value = car.name;
+          document.getElementById("tankHint").textContent = `タンク容量：${car.tank}L`;
+          document.getElementById("tankInput").value = car.tank;
+        } else {
+          document.getElementById("carInput").value = carName;
+        }
+      }
+      const tank = localStorage.getItem(LS.tank);
+      if (tank && !selectedCar) document.getElementById("tankInput").value = tank;
+
+      const fuel = localStorage.getItem(LS.fuel);
+      if (fuel) setFuel(fuel);
+
+      const price = localStorage.getItem(LS.price);
+      if (price) document.getElementById("priceInput").value = price;
+
+      const level = localStorage.getItem(LS.level);
+      if (level !== null) {
+        selectedLevel = parseFloat(level);
+        document.querySelectorAll(".level-btn").forEach(b => {
+          b.classList.toggle("selected", parseFloat(b.dataset.level) === selectedLevel);
+        });
+      }
+    } catch {}
+  }
+
+  // --- localStorage 保存 ---
+  function saveToStorage() {
+    try {
+      localStorage.setItem(LS.car,   selectedCar ? selectedCar.name : document.getElementById("carInput").value);
+      localStorage.setItem(LS.fuel,  selectedFuel);
+      localStorage.setItem(LS.price, document.getElementById("priceInput").value);
+      localStorage.setItem(LS.tank,  document.getElementById("tankInput").value);
+      localStorage.setItem(LS.level, selectedLevel);
+    } catch {}
+  }
 
   // --- 車種サジェスト ---
-  const carInput = document.getElementById("carInput");
+  const carInput      = document.getElementById("carInput");
   const suggestionList = document.getElementById("suggestions");
-  const tankHint = document.getElementById("tankHint");
+  const tankHint      = document.getElementById("tankHint");
+  const tankInput     = document.getElementById("tankInput");
 
   carInput.addEventListener("input", () => {
     const q = carInput.value.trim();
@@ -484,22 +751,16 @@
   suggestionList.addEventListener("click", e => {
     const li = e.target.closest("li");
     if (!li) return;
-    const name = li.dataset.name;
-    selectedCar = CARS.find(c => c.name === name);
-    carInput.value = selectedCar.name;
+    selectedCar = CARS.find(c => c.name === li.dataset.name);
+    carInput.value  = selectedCar.name;
     tankHint.textContent = `タンク容量：${selectedCar.tank}L`;
+    tankInput.value = selectedCar.tank;
     suggestionList.style.display = "none";
-
-    // 燃料を自動選択
-    if (selectedCar.fuel.length === 1) {
-      setFuel(selectedCar.fuel[0]);
-    }
+    if (selectedCar.fuel.length === 1) setFuel(selectedCar.fuel[0]);
   });
 
   document.addEventListener("click", e => {
-    if (!e.target.closest(".search-wrap")) {
-      suggestionList.style.display = "none";
-    }
+    if (!e.target.closest(".search-wrap")) suggestionList.style.display = "none";
   });
 
   // --- 燃料ボタン ---
@@ -528,12 +789,13 @@
   document.getElementById("calcBtn").addEventListener("click", calculate);
 
   function calculate() {
-    const errorMsg = document.getElementById("errorMsg");
+    const errorMsg  = document.getElementById("errorMsg");
     const resultCard = document.getElementById("resultCard");
     errorMsg.style.display = "none";
 
-    if (!selectedCar) {
-      errorMsg.textContent = "車種を選択してください。";
+    const tankVal = parseFloat(tankInput.value);
+    if (!tankVal || tankVal <= 0) {
+      errorMsg.textContent = "車種を選択するか、タンク容量を入力してください。";
       errorMsg.style.display = "block";
       return;
     }
@@ -544,28 +806,37 @@
       return;
     }
 
-    const liters = Math.round(selectedCar.tank * (1 - selectedLevel) * 10) / 10;
+    saveToStorage();
 
-    const total = Math.round(liters * price);
+    const liters = Math.round(tankVal * (1 - selectedLevel) * 10) / 10;
+    const total  = Math.round(liters * price);
+    const per1000 = (1000 / price).toFixed(1);
 
-    document.getElementById("resultAmount").textContent =
-      "¥" + total.toLocaleString();
+    document.getElementById("resultAmount").textContent = "¥" + total.toLocaleString();
 
     const levelLabel = {
-      0.75: "3/4残 → 満",
-      0.5: "1/2残 → 満",
-      0.25: "1/4残 → 満",
-      0: "ほぼ空 → 満"
+      0.75: "3/4残 → 満タン",
+      0.5:  "1/2残 → 満タン",
+      0.25: "1/4残 → 満タン",
+      0:    "ほぼ空 → 満タン",
     }[selectedLevel] || "";
 
+    const carLabel = selectedCar ? selectedCar.name : "タンク " + tankVal + "L";
     document.getElementById("resultDetail").innerHTML =
-      `${selectedCar.name}（${FUEL_LABELS[selectedFuel]}）<br>` +
-      `補給量：約 ${liters}L &nbsp;×&nbsp; ${price}円<br>` +
+      `${carLabel}（${FUEL_LABELS[selectedFuel]}）<br>` +
+      `補給量：約 ${liters}L &nbsp;×&nbsp; ${price}円/L<br>` +
       `${levelLabel}`;
+
+    document.getElementById("resultPer1000").textContent =
+      `💡 1,000円で約 ${per1000} L 給油できます`;
 
     resultCard.classList.add("show");
     resultCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
+
+  // --- 初期化 ---
+  loadAvgPrices();
+  loadFromStorage();
 </script>
 </body>
 </html>
